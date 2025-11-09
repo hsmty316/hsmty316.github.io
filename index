@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title><ruby>動<rt>どう</rt></ruby><ruby>詞<rt>し</rt></ruby>の<ruby>活<rt>かつ</rt></ruby><ruby>用<rt>よう</rt></ruby><ruby>練<rt>れん</rt></ruby><ruby>習<rt>しゅう</rt></ruby></title>
+<style>
+body {
+  font-family: "Hannari", "YuKyokasho", "YuKyokasho Yoko", "YuMincho", serif;
+  text-align: center;
+  background-color: #fff;
+  margin: 0;
+  padding: 0;
+}
+h1 { font-size: 1.8em; margin: 20px; }
+ruby rt { font-size: 0.5em; }
+
+.btn {
+  font-size: 1.1em;
+  margin: 8px;
+  padding: 8px 16px;
+  border-radius: 12px;
+  border: none;
+  background-color: #f0f0f0;
+  cursor: pointer;
+  transition: 0.15s;
+}
+.btn:hover { background-color: #ddd; }
+.btn[disabled] {
+  background-color: #f6f6f6;
+  color: #aaa;
+  cursor: default;
+  transform: none;
+}
+
+#card {
+  font-size: 2.5em;
+  border: 2px solid #ccc;
+  border-radius: 20px;
+  width: 70%;
+  max-width: 400px;
+  margin: 40px auto;
+  padding: 40px 10px;
+  background-color: #fff;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  cursor: pointer;
+  user-select: none;
+  opacity: 1;
+  transition: opacity 0.35s ease;
+}
+.hidden { display: none; }
+.fade-out { opacity: 0; }
+.fade-in { opacity: 1; }
+
+.result-table {
+  margin: 20px auto;
+  border-collapse: collapse;
+  width: 80%;
+  max-width: 800px;
+}
+.result-table th, .result-table td {
+  border: 1px solid #ccc;
+  padding: 6px;
+  font-size: 1.0em;
+}
+.correct-row { background-color: #ffe5e5; }
+.wrong-row { background-color: #e5f0ff; }
+
+
+.ending1 { color: blue; }
+.ending2 { color: red; }
+.ending3 { color: green; }
+
+#formButtons {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); /* 幅80px以上で自動調整 */
+  justify-items: center;   /* 各ボタンを中央揃え */
+  gap: 10px;
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+.btn {
+  padding: 16px 24px;
+  font-size: 1.1em;
+  border-radius: 12px;
+  border: none;
+  background-color: #f0f0f0;
+  cursor: pointer;
+  transition: 0.15s;
+}
+
+.btn:hover { background-color: #ddd; }
+#btnCorrect { background-color: #ffe5e5; }
+#btnWrong { background-color: #e5f0ff; }
+#btnCorrect, #btnWrong {
+  width: 100px;   /* 横幅 */
+  height: 60px;   /* 高さ */
+}
+
+</style>
+</head>
+<body>
+<h1><ruby>動<rt>どう</rt></ruby><ruby>詞<rt>し</rt></ruby>の<ruby>活<rt>かつ</rt></ruby><ruby>用<rt>よう</rt></ruby><ruby>練<rt>れん</rt></ruby><ruby>習<rt>しゅう</rt></ruby></h1>
+
+<div id="selectForm">
+  <h2><ruby>活<rt>かつ</rt></ruby><ruby>用<rt>よう</rt></ruby>をえらんでください</h2>
+  <div id="formButtons"></div>
+</div>
+
+<div id="quiz" class="hidden" aria-live="polite">
+  <div id="card" role="button" aria-pressed="false" onclick="flipCard()"></div>
+  <div>
+    <button id="btnCorrect" class="btn" disabled onclick="checkAnswer(true)">〇</button>
+    <button id="btnWrong" class="btn" disabled onclick="checkAnswer(false)">×</button>
+  </div>
+</div>
+
+<div id="result" class="hidden" aria-live="polite">
+  <table class="result-table" aria-hidden="false">
+    <tr>
+      <th>〇 (<span id="correctCount"></span>)</th>
+      <th>× (<span id="wrongCount"></span>)</th>
+    </tr>
+    <tr>
+      <td id="correctList" class="correct-row"></td>
+      <td id="wrongList" class="wrong-row"></td>
+    </tr>
+  </table>
+  <div style="margin-top:12px;">
+    <button class="btn" onclick="retryWrong()">×だけもう<ruby>一度<rt>いちど</rt></ruby></button>
+    <button class="btn" onclick="retry()"><ruby>全部<rt>ぜんぶ</rt>もう<ruby>一度<rt>いちど</rt></ruby></button>
+    <button class="btn" onclick="goMenu()"><ruby>トップに<ruby>戻<rt>もど</rt></ruby>る</button>
+   </div>
+<!-- 結果画面バナー広告 -->
+  <div id="resultAd" style="text-align:center; margin:20px 0;">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9753272407087513"
+     crossorigin="anonymous"></script>src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <ins class="adsbygoogle"
+         style="display:block"
+         data-ad-client="ca-pub-XXXXXXXXXXXX"
+         data-ad-slot="ZZZZZZZZZZ"
+         data-ad-format="auto"></ins>
+    <script>
+         (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+  </div>
+</div>
+<script>
+// -------- 出題データ ----------
+
+const conjugationData = {
+  "て形": [
+    { base: "<ruby>飲<rt>の</rt></ruby>みます", answer: "<ruby>飲<rt>の</rt></ruby><span class='ending1'>んで(Ⅰ)</span>" },
+    { base: "<ruby>食<rt>た</rt></ruby>べます", answer: "<ruby>食<rt>た</rt></ruby>べ<span class='ending2'>て(Ⅱ)</span>" },
+    { base: "<ruby>し</ruby>ます", answer: "<ruby></ruby><span class='ending3'>して(Ⅲ)</span>" },
+    { base: "<ruby>来<rt>き</rt></ruby>ます", answer: "<span class='ending3'><ruby>来<rt>き</rt></ruby>て(Ⅲ)</span>" },
+    { base: "<ruby>つ</ruby>けます", answer: "<ruby>つ</ruby>け<span class='ending2'>て(Ⅱ)</span>" },
+    { base: "<ruby>消<rt>け</rt></ruby>します", answer: "<ruby>消<rt>け</rt></ruby><span class='ending1'>して(Ⅰ)</span>" },
+    { base: "<ruby>開<rt>あ</rt></ruby>けます", answer: "<ruby>開<rt>あ</rt></ruby>け<span class='ending2'>て(Ⅱ)</span>" },
+    { base: "<ruby>閉<rt>し</rt></ruby>めます", answer: "<ruby>閉<rt>し</rt></ruby>め<span class='ending2'>て(Ⅱ)</span>" },
+    { base: "<ruby>急<rt>いそ</rt></ruby>ぎます", answer: "<ruby>急<rt>いそ</rt></ruby><span class='ending1'>いで(Ⅰ)</span>" },
+    { base: "<ruby>待<rt>ま</rt></ruby>ちます", answer: "<ruby>待<rt>ま</rt></ruby><span class='ending1'>って(Ⅰ)</span>" },
+    { base: "<ruby>持<rt>も</rt></ruby>ちます", answer: "<ruby>持<rt>も</rt></ruby><span class='ending1'>って(Ⅰ)</span>" },
+    { base: "<ruby>取<rt>と</rt></ruby>ります", answer: "<ruby>取<rt>と</rt></ruby><span class='ending1'>って(Ⅰ)</span>" },
+    { base: "<ruby>手伝<rt>てつだ</rt></ruby>います", answer: "<ruby>手伝<rt>てつだ</rt></ruby><span class='ending1'>って(Ⅰ)</span>" },
+    { base: "<ruby>呼<rt>よ</rt></ruby>びます", answer: "<ruby>呼<rt>よ</rt></ruby><span class='ending1'>んで(Ⅰ)</span>" },
+    { base: "<ruby>話<rt>はな</rt></ruby>します", answer: "<ruby>話<rt>はな</rt></ruby><span class='ending1'>して(Ⅰ)</span>" },
+    { base: "<ruby>使<rt>つか</rt></ruby>います", answer: "<ruby>使<rt>つか</rt></ruby><span class='ending1'>って(Ⅰ)</span>" },
+    { base: "<ruby>止<rt>と</rt></ruby>めます", answer: "<ruby>止<rt>と</rt></ruby>め<span class='ending2'>て(Ⅱ)</span>" },
+    { base: "<ruby>見<rt>み</rt></ruby>せます", answer: "<ruby>見<rt>み</rt></ruby>せ<span class='ending2'>て(Ⅱ☆)</span>" },
+    { base: "<ruby>教<rt>おし</rt></ruby>えます", answer: "<ruby>教<rt>おし</rt></ruby>え<span class='ending2'>て(Ⅱ)</span>" },
+    { base: "<ruby>座<rt>すわ</rt></ruby>ります", answer: "<ruby>座<rt>すわ</rt></ruby><span class='ending1'>って(Ⅰ)</span>" },
+    { base: "<ruby>立<rt>た</rt></ruby>ちます", answer: "<ruby>立<rt>た</rt></ruby><span class='ending1'>って(Ⅰ)</span>" },
+    { base: "<ruby>入<rt>はい</rt></ruby>ります", answer: "<ruby>入<rt>はい</rt></ruby><span class='ending1'>って(Ⅰ)</span>" },
+    { base: "<ruby>出<rt>で</rt></ruby>ます", answer: "<ruby>出<rt>で</rt></ruby><span class='ending2'>て(Ⅱ)</span>" },
+    { base: "<ruby>降<rt>ふ</rt></ruby>ります", answer: "<ruby>降<rt>ふ</rt></ruby><span class='ending1'>って(Ⅰ)</span>" },
+    { base: "<ruby>コピー</ruby>します", answer: "<ruby>コピー</ruby><span class='ending3'>して(Ⅲ)</span>" },
+    { base: "<ruby>見<rt>み</rt></ruby>ます", answer: "<ruby>見<rt>み</rt></ruby>て<span class='ending2'>て(Ⅱ)</span>" },
+    { base: "<ruby>聞<rt>き</rt></ruby>きます", answer: "<ruby>聞<rt>き</rt></ruby><span class='ending1'>いて(Ⅰ)</span>" },
+    { base: "<ruby>読<rt>よ</rt></ruby>みます", answer: "<ruby>読<rt>よ</rt></ruby><span class='ending1'>んで(Ⅰ)</span>" },
+    { base: "<ruby>書<rt>か</rt></ruby>きます", answer: "<ruby>書<rt>か</rt></ruby><span class='ending1'>いて(Ⅰ)</span>" },
+    { base: "<ruby>買<rt>か</rt></ruby>います", answer: "<ruby>買<rt>か</rt></ruby><span class='ending1'>って(Ⅰ)</span>" },
+    { base: "<ruby>起<rt>お</rt></ruby>きます", answer: "<ruby>起<rt>お</rt></ruby>き<span class='ending2'>て(Ⅱ☆)</span>" },
+    { base: "<ruby>寝<rt>ね</rt></ruby>ます", answer: "<ruby>寝<rt>ね</rt></ruby><span class='ending2'>て(Ⅱ)</span>" },
+    { base: "<ruby>貸<rt>か</rt></ruby>します", answer: "<ruby>貸<rt>か</rt></ruby><span class='ending1'>して(Ⅰ)</span>" },
+    { base: "<ruby>借<rt>か</rt></ruby>ります", answer: "<ruby>借<rt>か</rt></ruby>り<span class='ending2'>て(Ⅱ☆)</span>" },
+    { base: "<ruby>教<rt>おし</rt></ruby>えます", answer: "<ruby>教<rt>おし</rt></ruby>え<span class='ending2'>て(Ⅱ)</span>" },
+    { base: "<ruby>習<rt>なら</rt></ruby>います", answer: "<ruby>習<rt>なら</rt></ruby><span class='ending1'>って(Ⅰ)</span>" },
+    { base: "<ruby>働<rt>はたら</rt></ruby>きます", answer: "<ruby>働<rt>はたら</rt></ruby><span class='ending1'>いて(Ⅰ)</span>" },
+    { base: "<ruby>休<rt>やす</rt></ruby>みます", answer: "<ruby>休<rt>やす</rt></ruby><span class='ending1'>んで(Ⅰ)</span>" },
+    { base: "<ruby>勉強<rt>べんきょう</rt></ruby>します", answer: "<ruby>勉強<rt>べんきょう</rt></ruby><span class='ending3'>して(Ⅲ)</span>" },
+    { base: "<ruby>終<rt>お</rt></ruby>わります", answer: "<ruby>終<rt>お</rt></ruby>わ<span class='ending1'>って(Ⅰ)</span>" },
+    { base: "<ruby>行<rt>い</rt></ruby>きます", answer: "<ruby>行<rt>い</rt></ruby><span class='ending1'>って(Ⅰ☆)</span>" },
+    { base: "<ruby>休<rt>やす</rt></ruby>みます", answer: "<ruby>休<rt>やす</rt></ruby><span class='ending1'>んで(Ⅰ)</span>" },
+    { base: "<ruby>遊<rt>あそ</rt></ruby>びます", answer: "<ruby>遊<rt>あそ</rt></ruby><span class='ending1'>んで(Ⅰ)</span>" },
+    { base: "<ruby>泳<rt>およ</rt></ruby>ぎます", answer: "<ruby>泳<rt>およ</rt></ruby><span class='ending1'>いで(Ⅰ)</span>" },
+    { base: "<ruby>迎<rt>むか</rt></ruby>えます", answer: "<ruby>迎<rt>むか</rt></ruby>え<span class='ending2'>て(Ⅱ)</span>" },
+    { base: "<ruby>疲<rt>つか</rt></ruby>れます", answer: "<ruby>疲<rt>つか</rt></ruby>れ<span class='ending2'>て(Ⅱ)</span>" },
+    { base: "<ruby>結婚<rt>けっこん</rt></ruby>します", answer: "<ruby>結婚<rt>けっこん</rt></ruby><span class='ending3'>して(Ⅲ)</span>" },
+    { base: "<ruby>買<rt>か</rt></ruby>い<ruby>物<rt>もの</rt></ruby>します", answer: "<ruby>買<rt>か</rt></ruby>い<ruby>物<rt>もの</rt></ruby><span class='ending3'>して(Ⅲ)</span>" },
+    { base: "<ruby>食事<rt>しょくじ</rt></ruby>します", answer: "<ruby>食事<rt>しょくじ</rt></ruby><span class='ending3'>して(Ⅲ)</span>" },
+    { base: "<ruby>散歩<rt>さんぽ</rt></ruby>します", answer: "<ruby>散歩<rt>さんぽ</rt></ruby><span class='ending3'>して(Ⅲ)</span>" }
+  ],
+  "ない形": [
+    { base: "<ruby>飲<rt>の</rt></ruby>みます", answer: "<ruby>飲<rt>の</rt></ruby><span class='ending1'>まない(Ⅰ)</span>" },
+    { base: "<ruby>食<rt>た</rt></ruby>べます", answer: "<ruby>食<rt>た</rt></ruby>べ<span class='ending2'>ない(Ⅱ)</span>" },
+    { base: "<ruby>し</ruby>ます", answer: "<ruby></ruby><span class='ending3'>しない(Ⅲ)</span>" },
+    { base: "<ruby>来<rt>き</rt></ruby>ます", answer: "<span class='ending3'><ruby>来<rt>こ</rt></ruby>ない(Ⅲ)</span>" },
+    { base: "<ruby>覚<rt>おぼ</rt></ruby>えます", answer: "<ruby>覚<rt>おぼ</rt></ruby>え<span class='ending2'>ない(Ⅱ)</span>" },
+    { base: "<ruby>忘<rt>わす</rt></ruby>れます", answer: "<ruby>忘<rt>わす</rt></ruby>れ<span class='ending2'>ない(Ⅱ)</span>" },
+    { base: "<ruby>なくします</ruby>", answer: "<ruby>なく</ruby><span class='ending1'>さない(Ⅰ)</span>" },
+    { base: "<ruby>払<rt>はら</rt></ruby>います", answer: "<ruby>払<rt>はら</rt></ruby><span class='ending1'>わない(Ⅰ)</span>" },
+    { base: "<ruby>返<rt>かえ</rt></ruby>します", answer: "<ruby>返<rt>かえ</rt></ruby><span class='ending1'>さない(Ⅰ)</span>" },
+    { base: "<ruby>出<rt>で</rt></ruby>かけます", answer: "<ruby>出<rt>で</rt></ruby>かけ<span class='ending2'>ない(Ⅱ)</span>" },
+    { base: "<ruby>脱<rt>ぬ</rt></ruby>ぎます", answer: "<ruby>脱<rt>ぬ</rt></ruby><span class='ending1'>がない(Ⅰ)</span>" },
+    { base: "<ruby>持<rt>も</rt></ruby>って<ruby>行<rt>い</rt></ruby>きます", answer: "<ruby>持<rt>も</rt></ruby>って行<rt>い</rt></ruby><span class='ending1'>かない(Ⅰ)</span>" },
+    { base: "<ruby>持<rt>も</rt></ruby>って<ruby>来<rt>き</rt></ruby>ます", answer: "<ruby>持<rt>も</rt></ruby>って<span class='ending3'><ruby>来<rt>こ</rt></ruby>ない(Ⅲ)</span>" },
+    { base: "<ruby>心配<rt>しんぱい</rt></ruby>します", answer: "<ruby>心配<rt>しんぱい</rt></ruby><span class='ending3'>しない(Ⅲ)</span>" },
+    { base: "<ruby>残業<rt>ざんぎょう</rt></ruby>します", answer: "<ruby>残業<rt>ざんぎょう</rt></ruby><span class='ending3'>しない(Ⅲ)</span>" },
+    { base: "<ruby>出張<rt>しゅっちょう</rt></ruby>します", answer: "<ruby>出張<rt>しゅっちょう</rt></ruby><span class='ending3'>しない(Ⅲ)</span>" },
+    { base: "<ruby>入<rt>はい</rt></ruby>ります", answer: "<ruby>入<rt>はい</rt></ruby><span class='ending1'>らない(Ⅰ)</span>" },
+    { base: "<ruby>知<rt>し</rt></ruby>ります", answer: "<ruby>知<rt>し</rt></ruby><span class='ending1'>らない(Ⅰ)</span>" },
+    { base: "<ruby>住<rt>す</rt></ruby>みます", answer: "<ruby>住<rt>す</rt></ruby><span class='ending1'>まない(Ⅰ)</span>" },
+    { base: "<ruby>研究<rt>けんきゅう</rt></ruby>します", answer: "<ruby>研究<rt>けんきゅう</rt></ruby><span class='ending3'>しない(Ⅲ)</span>" },
+    { base: "<ruby>乗<rt>の</rt></ruby>ります", answer: "<ruby>乗<rt>の</rt></ruby><span class='ending1'>らない(Ⅰ)</span>" },
+    { base: "<ruby>降<rt>お</rt></ruby>ります", answer: "<ruby>降<rt>お</rt></ruby>り<span class='ending2'>ない(Ⅱ☆)</span>" },
+    { base: "<ruby>乗<rt>の</rt></ruby>り<ruby>換<rt>か</rt></ruby>えます", answer: "<ruby>乗<rt>の</rt></ruby>り<ruby>換<rt>か</rt></ruby>え<span class='ending2'>ない(Ⅱ)</span>" },
+    { base: "<ruby>浴<rt>あ</rt></ruby>びます", answer: "<ruby>浴<rt>あ</rt></ruby>び<span class='ending2'>ない(Ⅱ☆)</span>" },
+    { base: "<ruby>入<rt>い</rt></ruby>れます", answer: "<ruby>入<rt>い</rt></ruby>れ<span class='ending2'>ない(Ⅱ)</span>" },
+    { base: "<ruby>出<rt>だ</rt></ruby>します", answer: "<ruby>出<rt>だ</rt></ruby><span class='ending1'>さない(Ⅰ)</span>" },
+    { base: "<ruby>起<rt>お</rt></ruby>きます", answer: "<ruby>起<rt>お</rt></ruby>き<span class='ending2'>ない(Ⅱ☆)</span>" },
+    { base: "<ruby>寝<rt>ね</rt></ruby>ます", answer: "<ruby>寝<rt>ね</rt></ruby><span class='ending2'>ない(Ⅱ)</span>" },
+    { base: "<ruby>働<rt>はたら</rt></ruby>きます", answer: "<ruby>働<rt>はたら</rt></ruby><span class='ending1'>かない(Ⅰ)</span>" },
+    { base: "<ruby>休<rt>やす</rt></ruby>みます", answer: "<ruby>休<rt>やす</rt></ruby><span class='ending1'>まない(Ⅰ)</span>" },
+    { base: "<ruby>勉強<rt>べんきょう</rt></ruby>します", answer: "<ruby>勉強<rt>べんきょう</rt></ruby><span class='ending3'>しない(Ⅲ)</span>" },
+    { base: "<ruby>終<rt>お</rt></ruby>わります", answer: "<ruby>終<rt>お</rt></ruby>わ<span class='ending1'>らない(Ⅰ)</span>" },
+    { base: "<ruby>行<rt>い</rt></ruby>きます", answer: "<ruby>行<rt>い</rt></ruby><span class='ending1'>かない(Ⅰ)</span>" },
+    { base: "<ruby>帰<rt>かえ</rt></ruby>ります", answer: "<ruby>帰<rt>かえ</rt></ruby><span class='ending1'>らない(Ⅰ)</span>" },
+    { base: "<ruby>吸<rt>す</rt></ruby>います", answer: "<ruby>吸<rt>す</rt></ruby><span class='ending1'>わない(Ⅰ)</span>" },
+    { base: "<ruby>見<rt>み</rt></ruby>ます", answer: "<ruby>見<rt>み</rt></ruby>ない<span class='ending2'>ない(Ⅱ☆)</span>" },
+    { base: "<ruby>聞<rt>き</rt></ruby>きます", answer: "<ruby>聞<rt>き</rt></ruby><span class='ending1'>かない(Ⅰ)</span>" },
+    { base: "<ruby>読<rt>よ</rt></ruby>みます", answer: "<ruby>読<rt>よ</rt></ruby><span class='ending1'>まない(Ⅰ)</span>" },
+    { base: "<ruby>書<rt>か</rt></ruby>きます", answer: "<ruby>書<rt>か</rt></ruby><span class='ending1'>かない(Ⅰ)</span>" },
+    { base: "<ruby>買<rt>か</rt></ruby>います", answer: "<ruby>買<rt>か</rt></ruby><span class='ending1'>わない(Ⅰ)</span>" },
+    { base: "<ruby>撮<rt>と</rt></ruby>ります", answer: "<ruby>撮<rt>と</rt></ruby><span class='ending1'>らない(Ⅰ)</span>" }
+  ],
+  "辞書形": [
+    { base: "<ruby>飲<rt>の</rt></ruby>みます",answer: "<ruby>飲<rt>の</rt></ruby><span class='ending1'>む(Ⅰ)</span>" },
+    { base: "<ruby>食<rt>た</rt></ruby>べます", answer: "<ruby>食<rt>た</rt></ruby>べ<span class='ending2'>る(Ⅱ)</span>" },
+    { base: "<ruby>し</ruby>ます", answer: "<ruby></ruby><span class='ending3'>する(Ⅲ)</span>" },
+    { base: "<ruby>来<rt>き</rt></ruby>ます", answer: "<span class='ending3'><ruby>来<rt>く</rt></ruby>る(Ⅲ)</span>" },
+  ],
+  "た形": [
+    { base: "<ruby>飲<rt>の</rt></ruby>みます", answer: "<ruby>飲<rt>の</rt></ruby><span class='ending1'>んだ(Ⅰ)</span>" },
+    { base: "<ruby>食<rt>た</rt></ruby>べます", answer: "<ruby>食<rt>た</rt></ruby>べ<span class='ending2'>て(Ⅱ)</span>" },
+    { base: "<ruby>し</ruby>ます", answer: "<ruby></ruby><span class='ending3'>した(Ⅲ)</span>" },
+    { base: "<ruby>来<rt>き</rt></ruby>ます", answer: "<span class='ending3'><ruby>来<rt>き</rt></ruby>た(Ⅲ)</span>" },
+  ],
+  "可能形": [
+    { base: "<ruby>飲<rt>の</rt></ruby>みます",answer: "<ruby>飲<rt>の</rt></ruby><span class='ending1'>めます(Ⅰ)</span>" },
+    { base: "<ruby>食<rt>た</rt></ruby>べます", answer: "<ruby>食<rt>た</rt></ruby>べ<span class='ending2'>られます(Ⅱ)</span>" },
+    { base: "<ruby>し</ruby>ます", answer: "<ruby></ruby><span class='ending3'>できます(Ⅲ)</span>" },
+    { base: "<ruby>来<rt>き</rt></ruby>ます", answer: "<span class='ending3'><ruby>来<rt>こ</rt></ruby>られます(Ⅲ)</span>" },
+  ],
+  "意向形": [
+    { base: "<ruby>飲<rt>の</rt></ruby>みます",answer: "<ruby>飲<rt>の</rt></ruby><span class='ending1'>もう(Ⅰ)</span>" },
+    { base: "<ruby>食<rt>た</rt></ruby>べます", answer: "<ruby>食<rt>た</rt></ruby>べ<span class='ending2'>よう(Ⅱ)</span>" },
+    { base: "<ruby>し</ruby>ます", answer: "<ruby></ruby><span class='ending3'>しよう(Ⅲ)</span>" },
+    { base: "<ruby>来<rt>き</rt></ruby>ます", answer: "<span class='ending3'><ruby>来<rt>こ</rt></ruby>よう(Ⅲ)</span>" },
+  ],
+  "命令形": [
+    { base: "<ruby>飲<rt>の</rt></ruby>みます",answer: "<ruby>飲<rt>の</rt></ruby><span class='ending1'>め(Ⅰ)</span>" },
+    { base: "<ruby>食<rt>た</rt></ruby>べます", answer: "<ruby>食<rt>た</rt></ruby>べ<span class='ending2'>ろ(Ⅱ)</span>" },
+    { base: "<ruby>し</ruby>ます", answer: "<ruby></ruby><span class='ending3'>しろ(Ⅲ)</span>" },
+    { base: "<ruby>来<rt>き</rt></ruby>ます", answer: "<span class='ending3'><ruby>来<rt>こ</rt></ruby>い(Ⅲ)</span>" },
+  ],
+  "禁止形": [
+    { base: "<ruby>飲<rt>の</rt></ruby>みます",answer: "<ruby>飲<rt>の</rt></ruby><span class='ending1'>むな(Ⅰ)</span>" },
+    { base: "<ruby>食<rt>た</rt></ruby>べます", answer: "<ruby>食<rt>た</rt></ruby>べ<span class='ending2'>るな(Ⅱ)</span>" },
+    { base: "<ruby>し</ruby>ます", answer: "<ruby></ruby><span class='ending3'>するな(Ⅲ)</span>" },
+    { base: "<ruby>来<rt>き</rt></ruby>ます", answer: "<span class='ending3'><ruby>来<rt>く</rt></ruby>るな(Ⅲ)</span>" },
+  ],
+  "条件形": [
+    { base: "<ruby>飲<rt>の</rt></ruby>みます",answer: "<ruby>飲<rt>の</rt></ruby><span class='ending1'>めば(Ⅰ)</span>" },
+    { base: "<ruby>食<rt>た</rt></ruby>べます", answer: "<ruby>食<rt>た</rt></ruby>べ<span class='ending2'>れば(Ⅱ)</span>" },
+    { base: "<ruby>し</ruby>ます", answer: "<ruby></ruby><span class='ending3'>すれば(Ⅲ)</span>" },
+    { base: "<ruby>来<rt>き</rt></ruby>ます", answer: "<span class='ending3'><ruby>来<rt>く</rt></ruby>れば(Ⅲ)</span>" },
+  ],
+  "受身形": [
+    { base: "<ruby>飲<rt>の</rt></ruby>みます",answer: "<ruby>飲<rt>の</rt></ruby><span class='ending1'>まれる(Ⅰ)</span>" },
+    { base: "<ruby>食<rt>た</rt></ruby>べます", answer: "<ruby>食<rt>た</rt></ruby>べ<span class='ending2'>られる(Ⅱ)</span>" },
+    { base: "<ruby>し</ruby>ます", answer: "<ruby></ruby><span class='ending3'>される(Ⅲ)</span>" },
+    { base: "<ruby>来<rt>き</rt></ruby>ます", answer: "<span class='ending3'><ruby>来<rt>こ</rt></ruby>られる(Ⅲ)</span>" },
+  ],
+  "使役形": [
+    { base: "<ruby>飲<rt>の</rt></ruby>みます",answer: "<ruby>飲<rt>の</rt></ruby><span class='ending1'>ませます(Ⅰ)</span>" },
+    { base: "<ruby>食<rt>た</rt></ruby>べます", answer: "<ruby>食<rt>た</rt></ruby>べ<span class='ending2'>させます(Ⅱ)</span>" },
+    { base: "<ruby>し</ruby>ます", answer: "<ruby></ruby><span class='ending3'>させます(Ⅲ)</span>" },
+    { base: "<ruby>来<rt>き</rt></ruby>ます", answer: "<span class='ending3'><ruby>来<rt>こ</rt></ruby>させます(Ⅲ)</span>" },
+  ],
+  "尊敬形": [
+    { base: "<ruby>飲<rt>の</rt></ruby>みます",answer: "<ruby>飲<rt>の</rt></ruby><span class='ending1'>まれる(Ⅰ)</span>" },
+    { base: "<ruby>食<rt>た</rt></ruby>べます", answer: "<ruby>食<rt>た</rt></ruby>べ<span class='ending2'>られる(Ⅱ)</span>" },
+    { base: "<ruby>し</ruby>ます", answer: "<ruby></ruby><span class='ending3'>される(Ⅲ)</span>" },
+    { base: "<ruby>来<rt>き</rt></ruby>ます", answer: "<span class='ending3'><ruby>来<rt>こ</rt></ruby>られる(Ⅲ)</span>" },
+  ],
+  "使役受身形": [
+    { base: "<ruby>飲<rt>の</rt></ruby>みます",answer: "<ruby>飲<rt>の</rt></ruby><span class='ending1'>ませられます(Ⅰ)</span>" },
+    { base: "<ruby>食<rt>た</rt></ruby>べます", answer: "<ruby>食<rt>た</rt></ruby>べ<span class='ending2'>させられます(Ⅱ)</span>" },
+    { base: "<ruby>し</ruby>ます", answer: "<ruby></ruby><span class='ending3'>させられます(Ⅲ)</span>" },
+    { base: "<ruby>来<rt>き</rt></ruby>ます", answer: "<span class='ending3'><ruby>来<rt>こ</rt></ruby>させられます(Ⅲ)</span>" },
+  ]
+};
+
+
+let currentForm = "";
+let questions = [];
+let currentIndex = 0;
+let correct = [];
+let wrong = [];
+
+const formButtons = document.getElementById("formButtons");
+const btnCorrect = document.getElementById("btnCorrect");
+const btnWrong = document.getElementById("btnWrong");
+const cardEl = document.getElementById("card");
+
+// 活用形ボタンにルビを追加
+const rubies = {
+  "て形": "て</rt></ruby><ruby>形<rt>けい</rt></ruby>",
+  "ない形": "ない</rt></ruby><ruby>形<rt>けい</rt></ruby>",
+  "辞書形": "<ruby>辞<rt>じ</rt></ruby><ruby>書<rt>しょ</rt></ruby><ruby>形<rt>けい</rt></ruby>",
+  "た形": "た</rt></ruby><ruby>形<rt>けい</rt></ruby>",
+  "可能形": "<ruby>可<rt>か</rt></ruby><ruby>能<rt>のう</rt></ruby><ruby>形<rt>けい</rt></ruby>",
+  "意向形": "<ruby>意<rt>い</rt></ruby><ruby>向<rt>こう</rt></ruby><ruby>形<rt>けい</rt></ruby>",
+  "命令形": "<ruby>命<rt>めい</rt></ruby><ruby>令<rt>れい</rt></ruby><ruby>形<rt>けい</rt></ruby>",
+  "禁止形": "<ruby>禁<rt>きん</rt></ruby><ruby>止<rt>し</rt></ruby><ruby>形<rt>けい</rt></ruby>",
+  "条件形": "<ruby>条<rt>じょう</rt></ruby><ruby>件<rt>けん</rt></ruby><ruby>形<rt>けい</rt></ruby>",
+  "受身形": "<ruby>受<rt>うけ</rt></ruby><ruby>身<rt>み</rt></ruby><ruby>形<rt>けい</rt></ruby>",
+  "使役形": "<ruby>使<rt>し</rt></ruby><ruby>役<rt>えき</rt></ruby><ruby>形<rt>けい</rt></ruby>",
+  "尊敬形": "<ruby>尊<rt>そん</rt></ruby><ruby>敬<rt>けい</rt></ruby><ruby>形<rt>けい</rt></ruby>",
+  "使役受身形": "<ruby>使<rt>し</rt></ruby><ruby>役<rt>えき</rt></ruby><br><ruby>受<rt>うけ</rt></ruby><ruby>身<rt>み</rt></ruby><ruby>形<rt>けい</rt></ruby>",
+  // 他の活用形も追加可能
+};
+
+// フォームボタンを作成
+Object.keys(conjugationData).forEach(form => {
+  const btn = document.createElement("button");
+  btn.className = "btn";
+  btn.innerHTML = rubies[form] || form;
+  btn.onclick = () => startPractice(form);
+  formButtons.appendChild(btn);
+});
+
+function startPractice(form) {
+  currentForm = form;
+   // 配列をシャッフル
+  let shuffled = [...conjugationData[form]].sort(() => Math.random() - 0.5);
+
+  // 最初の10個だけ取り出す
+  questions = shuffled.slice(0, 10);
+
+  correct = [];
+  wrong = [];
+  currentIndex = 0;
+
+  document.getElementById("selectForm").classList.add("hidden");
+  document.getElementById("quiz").classList.remove("hidden");
+  disableJudgeButtons();
+  showCard();
+}
+
+function showCard() {
+  cardEl.classList.remove("fade-out");
+  cardEl.style.visibility = "visible";
+  cardEl.innerHTML = questions[currentIndex].base;
+  cardEl.dataset.flipped = "false";
+  cardEl.setAttribute("aria-pressed", "false");
+  disableJudgeButtons();
+}
+
+function flipCard() {
+  if (cardEl.dataset.flipped === "true") return;
+  cardEl.classList.add("fade-out");
+  setTimeout(() => {
+    cardEl.innerHTML = questions[currentIndex].answer;
+    cardEl.dataset.flipped = "true";
+    cardEl.setAttribute("aria-pressed", "true");
+    cardEl.classList.remove("fade-out");
+    enableJudgeButtons();
+  }, 220);
+}
+
+function enableJudgeButtons() {
+  btnCorrect.disabled = false;
+  btnWrong.disabled = false;
+}
+
+function disableJudgeButtons() {
+  btnCorrect.disabled = true;
+  btnWrong.disabled = true;
+}
+
+function checkAnswer(isCorrect) {
+  if (btnCorrect.disabled && btnWrong.disabled) return;
+  const q = questions[currentIndex];
+  if (isCorrect) correct.push(q);
+  else wrong.push(q);
+  disableJudgeButtons();
+  currentIndex++;
+  if (currentIndex < questions.length) {
+    cardEl.classList.add("fade-out");
+    setTimeout(() => {
+      cardEl.style.visibility = "hidden";
+      cardEl.innerHTML = "";
+      setTimeout(() => { showCard(); }, 180);
+    }, 180);
+  } else {
+    showResult();
+  }
+}
+
+function showResult() {
+  document.getElementById("quiz").classList.add("hidden");
+  document.getElementById("result").classList.remove("hidden");
+  document.getElementById("correctCount").textContent = correct.length;
+  document.getElementById("wrongCount").textContent = wrong.length;
+  document.getElementById("correctList").innerHTML = correct.map(q => `${q.base} → ${q.answer}`).join("<br>");
+  document.getElementById("wrongList").innerHTML = wrong.map(q => `${q.base} → ${q.answer}`).join("<br>");
+}
+
+function retryWrong() {
+  if (wrong.length === 0) return;
+  questions = [...wrong];
+  wrong = [];
+  correct = [];
+  currentIndex = 0;
+  document.getElementById("result").classList.add("hidden");
+  document.getElementById("quiz").classList.remove("hidden");
+  disableJudgeButtons();
+  showCard();
+}
+
+function retry() { startPractice(currentForm); document.getElementById("result").classList.add("hidden"); }
+function goMenu() { document.getElementById("result").classList.add("hidden"); document.getElementById("selectForm").classList.remove("hidden"); }
+
+</script>
+</body>
+</html>
