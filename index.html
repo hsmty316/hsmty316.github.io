@@ -101,10 +101,11 @@ ruby rt { font-size: 0.5em; }
 </style>
 </head>
 <body>
-<h1><ruby>動<rt>どう</rt></ruby><ruby>詞<rt>し</rt></ruby>の<ruby>活<rt>かつ</rt></ruby><ruby>用<rt>よう</rt></ruby><ruby>練<rt>れん</rt></ruby><ruby>習<rt>しゅう</rt></ruby></h1>
+<h1 id="pageTitle"><ruby>動<rt>どう</rt></ruby><ruby>詞<rt>し</rt></ruby>の<ruby>活<rt>かつ</rt></ruby><ruby>用<rt>よう</rt></ruby><ruby>練<rt>れん</rt></ruby><ruby>習<rt>しゅう</rt></ruby></h1>
+
 
 <div id="selectForm">
-  <h2><ruby>活<rt>かつ</rt></ruby><ruby>用<rt>よう</rt></ruby>をえらんでください</h2>
+  <h2><ruby>活<rt>かつ</rt></ruby><ruby>用<rt>よう</rt></ruby>を<ruby>選<rt>えら</rt></ruby>んでください</h2>
   <div id="formButtons"></div>
 </div>
 
@@ -150,7 +151,7 @@ ruby rt { font-size: 0.5em; }
 // -------- 出題データ ----------
 
 const conjugationData = {
-  "て形": [
+  "て</rt></ruby><ruby>形<rt>けい</rt></ruby>": [
     { base: "<ruby>飲<rt>の</rt></ruby>みます", answer: "<ruby>飲<rt>の</rt></ruby><span class='ending1'>んで(Ⅰ)</span>" },
     { base: "<ruby>食<rt>た</rt></ruby>べます", answer: "<ruby>食<rt>た</rt></ruby>べ<span class='ending2'>て(Ⅱ)</span>" },
     { base: "<ruby>し</ruby>ます", answer: "<ruby></ruby><span class='ending3'>して(Ⅲ)</span>" },
@@ -202,7 +203,7 @@ const conjugationData = {
     { base: "<ruby>食事<rt>しょくじ</rt></ruby>します", answer: "<ruby>食事<rt>しょくじ</rt></ruby><span class='ending3'>して(Ⅲ)</span>" },
     { base: "<ruby>散歩<rt>さんぽ</rt></ruby>します", answer: "<ruby>散歩<rt>さんぽ</rt></ruby><span class='ending3'>して(Ⅲ)</span>" }
   ],
-  "ない形": [
+  "ない</rt></ruby><ruby>形<rt>けい</rt></ruby>": [
     { base: "<ruby>飲<rt>の</rt></ruby>みます", answer: "<ruby>飲<rt>の</rt></ruby><span class='ending1'>まない(Ⅰ)</span>" },
     { base: "<ruby>食<rt>た</rt></ruby>べます", answer: "<ruby>食<rt>た</rt></ruby>べ<span class='ending2'>ない(Ⅱ)</span>" },
     { base: "<ruby>し</ruby>ます", answer: "<ruby></ruby><span class='ending3'>しない(Ⅲ)</span>" },
@@ -246,7 +247,7 @@ const conjugationData = {
     { base: "<ruby>遊<rt>あそ</rt></ruby>びます", answer: "<ruby>遊<rt>あそ</rt></ruby><span class='ending1'>ばない(Ⅰ)</span>" },
     { base: "<ruby>撮<rt>と</rt></ruby>ります", answer: "<ruby>撮<rt>と</rt></ruby><span class='ending1'>らない(Ⅰ)</span>" }
   ],
-  "辞書形": [
+  "<ruby>辞<rt>じ</rt></ruby><ruby>書<rt>しょ</rt></ruby><ruby>形<rt>けい</rt></ruby>": [
     { base: "<ruby>飲<rt>の</rt></ruby>みます",answer: "<ruby>飲<rt>の</rt></ruby><span class='ending1'>む(Ⅰ)</span>" },
     { base: "<ruby>食<rt>た</rt></ruby>べます", answer: "<ruby>食<rt>た</rt></ruby>べ<span class='ending2'>る(Ⅱ)</span>" },
     { base: "<ruby>し</ruby>ます", answer: "<ruby></ruby><span class='ending3'>する(Ⅲ)</span>" },
@@ -293,7 +294,7 @@ const conjugationData = {
     { base: "<ruby>教<rt>おし</rt></ruby>えます", answer: "<ruby>教<rt>おし</rt></ruby>え<span class='ending2'>る(Ⅱ)</span>" },
     { base: "<ruby>習<rt>なら</rt></ruby>います", answer: "<ruby>習<rt>なら</rt></ruby><span class='ending1'>う(Ⅰ)</span>" }
   ],
-  "た形": [
+  "た</rt></ruby><ruby>形<rt>けい</rt></ruby>": [
     { base: "<ruby>飲<rt>の</rt></ruby>みます", answer: "<ruby>飲<rt>の</rt></ruby><span class='ending1'>んだ(Ⅰ)</span>" },
     { base: "<ruby>食<rt>た</rt></ruby>べます", answer: "<ruby>食<rt>た</rt></ruby>べ<span class='ending2'>た(Ⅱ)</span>" },
     { base: "<ruby>し</ruby>ます", answer: "<ruby></ruby><span class='ending3'>した(Ⅲ)</span>" },
@@ -349,19 +350,19 @@ const conjugationData = {
     { base: "<ruby>食事<rt>しょくじ</rt></ruby>します", answer: "<ruby>食事<rt>しょくじ</rt></ruby><span class='ending3'>した(Ⅲ)</span>" },
     { base: "<ruby>散歩<rt>さんぽ</rt></ruby>します", answer: "<ruby>散歩<rt>さんぽ</rt></ruby><span class='ending3'>した(Ⅲ)</span>" }
   ],
-  "可能形": [
+  "<ruby>可<rt>か</rt></ruby><ruby>能<rt>のう</rt></ruby><ruby>形<rt>けい</rt></ruby>": [
     { base: "<ruby>飲<rt>の</rt></ruby>みます",answer: "<ruby>飲<rt>の</rt></ruby><span class='ending1'>めます(Ⅰ)</span>" },
     { base: "<ruby>食<rt>た</rt></ruby>べます", answer: "<ruby>食<rt>た</rt></ruby>べ<span class='ending2'>られます(Ⅱ)</span>" },
     { base: "<ruby>し</ruby>ます", answer: "<ruby></ruby><span class='ending3'>できます(Ⅲ)</span>" },
     { base: "<ruby>来<rt>き</rt></ruby>ます", answer: "<span class='ending3'><ruby>来<rt>こ</rt></ruby>られます(Ⅲ)</span>" },
   ],
-  "意向形": [
+  "<ruby>意<rt>い</rt></ruby><ruby>向<rt>こう</rt></ruby><ruby>形<rt>けい</rt></ruby>": [
     { base: "<ruby>飲<rt>の</rt></ruby>みます",answer: "<ruby>飲<rt>の</rt></ruby><span class='ending1'>もう(Ⅰ)</span>" },
     { base: "<ruby>食<rt>た</rt></ruby>べます", answer: "<ruby>食<rt>た</rt></ruby>べ<span class='ending2'>よう(Ⅱ)</span>" },
     { base: "<ruby>し</ruby>ます", answer: "<ruby></ruby><span class='ending3'>しよう(Ⅲ)</span>" },
     { base: "<ruby>来<rt>き</rt></ruby>ます", answer: "<span class='ending3'><ruby>来<rt>こ</rt></ruby>よう(Ⅲ)</span>" },
   ],
-  "命令形": [
+  "<ruby>命<rt>めい</rt></ruby><ruby>令<rt>れい</rt></ruby><ruby>形<rt>けい</rt></ruby>": [
     { base: "<ruby>飲<rt>の</rt></ruby>みます",answer: "<ruby>飲<rt>の</rt></ruby><span class='ending1'>め(Ⅰ)</span>" },
     { base: "<ruby>食<rt>た</rt></ruby>べます", answer: "<ruby>食<rt>た</rt></ruby>べ<span class='ending2'>ろ(Ⅱ)</span>" },
     { base: "<ruby>し</ruby>ます", answer: "<ruby></ruby><span class='ending3'>しろ(Ⅲ)</span>" },
@@ -411,7 +412,7 @@ const conjugationData = {
     { base: "<ruby>待<rt>ま</rt></ruby>ちます", answer: "<ruby>待<rt>ま</rt></ruby><span class='ending1'>て(Ⅰ)</span>" },
     { base: "<ruby>持<rt>も</rt></ruby>ちます", answer: "<ruby>持<rt>も</rt></ruby><span class='ending1'>て(Ⅰ)</span>" },
   ],
-  "禁止形": [
+  "<ruby>禁<rt>きん</rt></ruby><ruby>止<rt>し</rt></ruby><ruby>形<rt>けい</rt></ruby>": [
     { base: "<ruby>飲<rt>の</rt></ruby>みます",answer: "<ruby>飲<rt>の</rt></ruby><span class='ending1'>むな(Ⅰ)</span>" },
     { base: "<ruby>食<rt>た</rt></ruby>べます", answer: "<ruby>食<rt>た</rt></ruby>べ<span class='ending2'>るな(Ⅱ)</span>" },
     { base: "<ruby>し</ruby>ます", answer: "<ruby></ruby><span class='ending3'>するな(Ⅲ)</span>" },
@@ -455,31 +456,31 @@ const conjugationData = {
     { base: "<ruby>借<rt>か</rt></ruby>ります", answer: "<ruby>借<rt>か</rt></ruby>り<span class='ending2'>るな(Ⅱ☆)</span>" },
     { base: "<ruby>教<rt>おし</rt></ruby>えます", answer: "<ruby>教<rt>おし</rt></ruby>え<span class='ending2'>るな(Ⅱ)</span>" },
   ],
-  "条件形": [
+  "<ruby>条<rt>じょう</rt></ruby><ruby>件<rt>けん</rt></ruby><ruby>形<rt>けい</rt></ruby>": [
     { base: "<ruby>飲<rt>の</rt></ruby>みます",answer: "<ruby>飲<rt>の</rt></ruby><span class='ending1'>めば(Ⅰ)</span>" },
     { base: "<ruby>食<rt>た</rt></ruby>べます", answer: "<ruby>食<rt>た</rt></ruby>べ<span class='ending2'>れば(Ⅱ)</span>" },
     { base: "<ruby>し</ruby>ます", answer: "<ruby></ruby><span class='ending3'>すれば(Ⅲ)</span>" },
     { base: "<ruby>来<rt>き</rt></ruby>ます", answer: "<span class='ending3'><ruby>来<rt>く</rt></ruby>れば(Ⅲ)</span>" },
   ],
-  "受身形": [
+  "<ruby>受<rt>うけ</rt></ruby><ruby>身<rt>み</rt></ruby><ruby>形<rt>けい</rt></ruby>": [
     { base: "<ruby>飲<rt>の</rt></ruby>みます",answer: "<ruby>飲<rt>の</rt></ruby><span class='ending1'>まれる(Ⅰ)</span>" },
     { base: "<ruby>食<rt>た</rt></ruby>べます", answer: "<ruby>食<rt>た</rt></ruby>べ<span class='ending2'>られる(Ⅱ)</span>" },
     { base: "<ruby>し</ruby>ます", answer: "<ruby></ruby><span class='ending3'>される(Ⅲ)</span>" },
     { base: "<ruby>来<rt>き</rt></ruby>ます", answer: "<span class='ending3'><ruby>来<rt>こ</rt></ruby>られる(Ⅲ)</span>" },
   ],
-  "使役形": [
+  "<ruby>使<rt>し</rt></ruby><ruby>役<rt>えき</rt></ruby><ruby>形<rt>けい</rt></ruby>": [
     { base: "<ruby>飲<rt>の</rt></ruby>みます",answer: "<ruby>飲<rt>の</rt></ruby><span class='ending1'>ませます(Ⅰ)</span>" },
     { base: "<ruby>食<rt>た</rt></ruby>べます", answer: "<ruby>食<rt>た</rt></ruby>べ<span class='ending2'>させます(Ⅱ)</span>" },
     { base: "<ruby>し</ruby>ます", answer: "<ruby></ruby><span class='ending3'>させます(Ⅲ)</span>" },
     { base: "<ruby>来<rt>き</rt></ruby>ます", answer: "<span class='ending3'><ruby>来<rt>こ</rt></ruby>させます(Ⅲ)</span>" },
   ],
-  "尊敬形": [
+  "<ruby>尊<rt>そん</rt></ruby><ruby>敬<rt>けい</rt></ruby><ruby>形<rt>けい</rt></ruby>": [
     { base: "<ruby>飲<rt>の</rt></ruby>みます",answer: "<ruby>飲<rt>の</rt></ruby><span class='ending1'>まれる(Ⅰ)</span>" },
     { base: "<ruby>食<rt>た</rt></ruby>べます", answer: "<ruby>食<rt>た</rt></ruby>べ<span class='ending2'>られる(Ⅱ)</span>" },
     { base: "<ruby>し</ruby>ます", answer: "<ruby></ruby><span class='ending3'>される(Ⅲ)</span>" },
     { base: "<ruby>来<rt>き</rt></ruby>ます", answer: "<span class='ending3'><ruby>来<rt>こ</rt></ruby>られる(Ⅲ)</span>" },
   ],
-  "使役受身形": [
+  "<ruby>使<rt>し</rt></ruby><ruby>役<rt>えき</rt></ruby><br><ruby>受<rt>うけ</rt></ruby><ruby>身<rt>み</rt></ruby><ruby>形<rt>けい</rt></ruby>": [
     { base: "<ruby>飲<rt>の</rt></ruby>みます",answer: "<ruby>飲<rt>の</rt></ruby><span class='ending1'>ませられます(Ⅰ)</span>" },
     { base: "<ruby>食<rt>た</rt></ruby>べます", answer: "<ruby>食<rt>た</rt></ruby>べ<span class='ending2'>させられます(Ⅱ)</span>" },
     { base: "<ruby>し</ruby>ます", answer: "<ruby></ruby><span class='ending3'>させられます(Ⅲ)</span>" },
@@ -528,6 +529,10 @@ Object.keys(conjugationData).forEach(form => {
 
 function startPractice(form) {
   currentForm = form;
+   // タイトル「～形を練習」
+ document.getElementById("pageTitle").innerHTML =
+    `<ruby>${form}の<ruby>活<rt>かつ</rt></ruby><ruby>用<rt>よう</rt></ruby><ruby>練<rt>れん</rt></ruby><ruby>習<rt>しゅう</rt></ruby>`;
+
    // 配列をシャッフル
   let shuffled = [...conjugationData[form]].sort(() => Math.random() - 0.5);
 
@@ -616,8 +621,10 @@ function retryWrong() {
 }
 
 function retry() { startPractice(currentForm); document.getElementById("result").classList.add("hidden"); }
-function goMenu() { document.getElementById("result").classList.add("hidden"); document.getElementById("selectForm").classList.remove("hidden"); }
-
+function goMenu() { document.getElementById("result").classList.add("hidden"); document.getElementById("selectForm").classList.remove("hidden"); 
+ document.getElementById("pageTitle").innerHTML =
+    "<ruby>動<rt>どう</rt></ruby><ruby>詞<rt>し</rt></ruby>の<ruby>活<rt>かつ</rt></ruby><ruby>用<rt>よう</rt></ruby><ruby>練<rt>れん</rt></ruby><ruby>習<rt>しゅう</rt></ruby>";
+}
 </script>
 </body>
 </html>
