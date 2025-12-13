@@ -38,20 +38,37 @@ ruby rt { font-size: 0.5em; }
 }
 
 #card {
-  font-size: 2.5em;
-  border: 2px solid #ccc;
-  border-radius: 20px;
+  font-size: 3.1em;
+  border: none;
   width: 70%;
-  max-width: 400px;
+  max-width: 500px;
   margin: 40px auto;
-  padding: 40px 10px;
-  background-color: #fff;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-  cursor: pointer;
-  user-select: none;
-  opacity: 1;
-  transition: opacity 0.35s ease;
+  perspective: 1000px;
 }
+
+
+.card-inner {
+  position: relative;
+  height: 200px;
+  cursor: pointer;
+  transform-style: preserve-3d;
+  transition: transform 0.6s;
+}
+
+.card-front, .card-back {
+  position: absolute;
+  width: 100%;
+  backface-visibility: hidden;
+  border: 2px solid #333;
+  border-radius: 12px; 
+  padding: 0.8em 0.6em;   /*　余白 上下 0.8em、左右 0.6em */
+  box-sizing: border-box;
+}
+
+.card-back {
+  transform: rotateY(180deg);
+}
+
 .hidden { display: none; }
 .fade-out { opacity: 0; }
 .fade-in { opacity: 1; }
@@ -114,7 +131,13 @@ ruby rt { font-size: 0.5em; }
 </div>
 
 <div id="quiz" class="hidden" aria-live="polite">
-  <div id="card" role="button" aria-pressed="false" onclick="flipCard()"></div>
+<div id="card">
+  <div class="card-inner" role="button" onclick="flipCard()">
+
+    <div class="card-front"></div>
+    <div class="card-back"></div>
+  </div>
+</div>
   <div>
     <button id="btnCorrect" class="btn" disabled onclick="checkAnswer(true)">〇</button>
     <button id="btnWrong" class="btn" disabled onclick="checkAnswer(false)">×</button>
@@ -712,26 +735,36 @@ function startPractice(form) {
   disableJudgeButtons();
   showCard();
 }
-
 function showCard() {
-  cardEl.classList.remove("fade-out");
-  cardEl.style.visibility = "visible";
-  cardEl.innerHTML = questions[currentIndex].base;
-  cardEl.dataset.flipped = "false";
-  cardEl.setAttribute("aria-pressed", "false");
-  disableJudgeButtons();
+  const inner = cardEl.querySelector(".card-inner");
+  const front = cardEl.querySelector(".card-front");
+  const back = cardEl.querySelector(".card-back");
+
+  // ★ 1) 一旦 3D を完全無効化（ここが最重要）
+  inner.style.transition = "none";
+  inner.style.transform = "none";
+
+  // 2) 裏面が見えない通常の平面状態で内容を書き換える
+  front.innerHTML = questions[currentIndex].base;
+  back.innerHTML = questions[currentIndex].answer;
+
+  // 3) 次のフレームで 3D を復活
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      inner.style.transition = ""; 
+      inner.style.transform = "rotateY(0deg)";
+      cardEl.dataset.flipped = "false";
+      disableJudgeButtons();
+    });
+  });
 }
 
 function flipCard() {
   if (cardEl.dataset.flipped === "true") return;
-  cardEl.classList.add("fade-out");
-  setTimeout(() => {
-    cardEl.innerHTML = questions[currentIndex].answer;
-    cardEl.dataset.flipped = "true";
-    cardEl.setAttribute("aria-pressed", "true");
-    cardEl.classList.remove("fade-out");
-    enableJudgeButtons();
-  }, 220);
+  const inner = cardEl.querySelector(".card-inner");
+  inner.style.transform = "rotateY(180deg)";
+  cardEl.dataset.flipped = "true";
+  enableJudgeButtons();
 }
 
 function enableJudgeButtons() {
@@ -746,22 +779,35 @@ function disableJudgeButtons() {
 
 function checkAnswer(isCorrect) {
   if (btnCorrect.disabled && btnWrong.disabled) return;
+
   const q = questions[currentIndex];
   if (isCorrect) correct.push(q);
   else wrong.push(q);
+
   disableJudgeButtons();
   currentIndex++;
+
   if (currentIndex < questions.length) {
     cardEl.classList.add("fade-out");
+
     setTimeout(() => {
-      cardEl.style.visibility = "hidden";
-      cardEl.innerHTML = "";
-      setTimeout(() => { showCard(); }, 180);
-    }, 180);
+      showCard();   // ★この時点では visibility が hidden
+
+      cardEl.classList.remove("fade-out");
+
+      // ★ここでふわっと表示（次の問題がチラ見えしない）
+      cardEl.classList.add("fade-in");
+      setTimeout(() => {
+        cardEl.classList.remove("fade-in");
+      }, 200);
+
+    }, 200);
+
   } else {
     showResult();
   }
 }
+
 
 function showResult() {
   document.getElementById("quiz").classList.add("hidden");
