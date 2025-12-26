@@ -49,7 +49,7 @@ ruby rt { font-size: 0.5em; }
 
 .card-inner {
   position: relative;
-  height: 200px;
+  height: 300px;         /*　ここでカード下の余白を操作できる*/
   cursor: pointer;
   transform-style: preserve-3d;
   transition: transform 0.6s;
@@ -117,8 +117,9 @@ ruby rt { font-size: 0.5em; }
 #btnCorrect, #btnWrong {
   width: 200px;   /* 横幅 */
   height: 100px;   /* 高さ */
-  margin-top: 80px;       /* カード下の余白量 */
-  font-size: 3.1em;
+  font-size: 4.1em;
+  align-items: center; 
+  justify-content: center;
 }
 
 </style>
@@ -141,7 +142,7 @@ ruby rt { font-size: 0.5em; }
   </div>
 </div>
   <div>
-    <button id="btnCorrect" class="btn" disabled onclick="checkAnswer(true)">〇</button>
+    <button id="btnCorrect" class="btn" disabled onclick="checkAnswer(true)">○</button>
     <button id="btnWrong" class="btn" disabled onclick="checkAnswer(false)">×</button>
   </div>
 </div>
